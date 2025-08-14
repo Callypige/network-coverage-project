@@ -1,0 +1,26 @@
+<div class="container">
+  <h1>🗼 Network Coverage Checker</h1>
+
+  <div class="search-box">
+    <input type="text" [ngModel]="address()" (ngModelChange)="address.set($event)">
+    <button (click)="search()" [disabled]="!address() || loading()">
+     {{ loading() ? 'Recherche...' : 'Vérifier la couverture' }}
+    </button>
+  </div>
+
+  <div class="results">
+    @if (results().length > 0) {
+      <h2>Résultats :</h2>
+      @for (result of results(); track result) {
+        <p>{{ result }}</p>
+      }
+      }
+      @else if (!loading()) {
+        <p>Entrez une adresse et cliquez sur "Vérifier"</p>
+      }
+      @if (loading()) {
+        <p>Chargement...</p>
+      }
+  </div>
+</div>
+
