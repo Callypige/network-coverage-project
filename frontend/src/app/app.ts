@@ -1,7 +1,24 @@
 import { Component, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { CoverageService } from './services/coverage';
+
+interface OperatorCoverage {
+  '2G': boolean;
+  '3G': boolean;
+  '4G': boolean;
+}
+
+interface AddressCoverage {
+  orange: OperatorCoverage;
+  SFR: OperatorCoverage;
+  bouygues: OperatorCoverage;
+  Free: OperatorCoverage;
+}
+
+interface CoverageResults {
+  [key: string]: AddressCoverage;
+}
 
 @Component({
   selector: 'app-root',
@@ -10,22 +27,30 @@ import { HttpClient } from '@angular/common/http';
   styleUrl: './app.css'
 })
 export class App {
+  private coverageService = inject(CoverageService);
+
   protected readonly title = signal('frontend');
   address = signal('');
-  results = signal<string[]>([]);
+  results = signal<CoverageResults | null>(null);
   loading = signal(false);
-  // for suggestions
-  suggestions = signal<any[]>([]);
-  showSuggestions = signal(false);
 
   search() {
-    this.loading.set(true);
-    this.results.set([]);
+    if (!this.address()) return;
 
-    // Simulate an API call
-    setTimeout(() => {
-      this.results.set(['Result 1', 'Result 2', 'Result 3']);
-      this.loading.set(false);
-    }, 1000);
+    console.log('Recherche pour:', this.address());
+    this.loading.set(true);
+    this.results.set({});
+
+    this.coverageService.checkCoverage(this.address()).subscribe({
+      next: (data) => {
+        console.log('Résultats reçus:', data);
+        this.results.set(data);
+        this.loading.set(false);
+      },
+      error: (error) => {
+        console.error('Erreur:', error);
+        this.loading.set(false);
+      }
+    });
   }
 }
