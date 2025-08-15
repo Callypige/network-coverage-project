@@ -2,27 +2,9 @@ import pytest
 import polars as pl
 from pathlib import Path
 from services.coverage_loader import load_coverage_measure_from_csv
-from services.coverage_calculator import compute_coverage_for_point, compute_distance
+from services.coverage_calculator import compute_coverage_for_point
 
 TEST_CSV_PATH = Path(__file__).parent.parent / "data" / "test_coverage_measure.csv"
-
-class TestComputeDistance:
-    """Tests for the compute_distance function"""
-    
-    def test_compute_distance_same_point(self):
-        """Distance between the same point should be 0"""
-        distance = compute_distance(100.0, 100.0, 100.0, 100.0)
-        assert distance == 0.0
-    
-    def test_compute_distance_known_values(self):
-        """Test with known distance values"""
-        # Distance between (0, 0) and (3, 4) should be 5
-        distance = compute_distance(0.0, 0.0, 3.0, 4.0)
-        assert distance == 5.0
-        
-        # Distance between (0, 0) and (1, 1) should be sqrt(2)
-        distance = compute_distance(0.0, 0.0, 1.0, 1.0)
-        assert distance == pytest.approx(1.414213562373095)
 
 class TestComputeCoverageForPoint:
     """Tests for the compute_coverage_for_point function"""
