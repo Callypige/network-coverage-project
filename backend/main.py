@@ -99,8 +99,8 @@ async def check_coverage(addresses: Dict[str, str]) -> Dict[str, AddressCoverage
             
             if geocode_result is None:
                 logger.warning(f"❌ Cannot geocode: {address}")
-                # Return no coverage for invalid address
-                results[address_id] = create_empty_coverage()
+                # Assign default AddressCoverage (no coverage) for this address_id
+                results[address_id] = convert_coverage_to_model({})
                 continue
             
             logger.info(f"📍 Found coordinates: Lambert93({geocode_result['x_lambert93']:.2f}, {geocode_result['y_lambert93']:.2f})")
@@ -117,23 +117,10 @@ async def check_coverage(addresses: Dict[str, str]) -> Dict[str, AddressCoverage
             
         except Exception as e:
             logger.error(f"Error processing {address_id}: {str(e)}")
-            results[address_id] = create_empty_coverage()
-    
-    return results
+            # Assign default AddressCoverage (no coverage) for this address_id
+            results[address_id] = convert_coverage_to_model({})
 
-def create_empty_coverage() -> AddressCoverage:
-    """Create an AddressCoverage with all operators set to False"""
-    no_coverage = OperatorCoverage(
-        two_g=False,
-        three_g=False,
-        four_g=False
-    )
-    return AddressCoverage(
-        orange=no_coverage,
-        SFR=no_coverage,
-        bouygues=no_coverage,
-        Free=no_coverage
-    )
+    return results
 
 def convert_coverage_to_model(coverage_dict: Dict) -> AddressCoverage:
     """
