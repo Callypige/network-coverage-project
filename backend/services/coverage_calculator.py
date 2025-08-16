@@ -15,27 +15,26 @@ def compute_coverage_for_point(x: float, y: float, df: pl.DataFrame, radius_by_t
     if radius_by_tech is None:
         radius_by_tech = {"2G": 30000, "3G": 5000, "4G": 10000}
     
+    # Calculate distance for ALL antennas once
+    df_with_distance = df.with_columns([
+        ((pl.col('x_lambert93') - x) ** 2 + (pl.col('y_lambert93') - y) ** 2).sqrt().alias('distance')
+    ])
+    
     operators = df['operator'].unique().to_list()
     result = {}
     
     for op in operators:
-        op_df = df.filter(pl.col('operator') == op)
+        op_df = df_with_distance.filter(pl.col('operator') == op)
         cover = {}
         
         for tech in ["2G", "3G", "4G"]:
-            sites_tech = op_df.filter(pl.col(tech))
-            if len(sites_tech) == 0:
-                cover[tech] = False
-                continue
-
-            # Calcul with Polars
-            # Calculate distances from the point to each antenna
-            distances = sites_tech.with_columns([
-                ((pl.col('x_lambert93') - x) ** 2 + (pl.col('y_lambert93') - y) ** 2).sqrt().alias('distance')
-            ])
-
-            # Verify if at least one antenna is within the radius
-            cover[tech] = bool(distances.filter(pl.col('distance') <= radius_by_tech[tech]).height > 0)
+            # Check if any antenna with this tech (=1) is within range
+            has_coverage = op_df.filter(
+                (pl.col(tech) == 1) &  # Has the technology
+                (pl.col('distance') <= radius_by_tech[tech])  # Is within range
+            ).height > 0
+            
+            cover[tech] = bool(has_coverage)
         
         result[op] = cover
     

@@ -1,19 +1,73 @@
-<!-- app.html -->
 <div class="container">
   <h1>🗼 Network Coverage Checker</h1>
 
-  <div class="search-box">
-    <input
-      type="text"
-      [ngModel]="address()"
-      (ngModelChange)="address.set($event)"
-      placeholder="Entrez une adresse...">
+  <div class="search-section">
+    <div class="autocomplete-wrapper">
+      <input
+        type="text"
+        [value]="address()"
+        (input)="onAddressInput($any($event.target).value)"
+        (focus)="showSuggestions.set(suggestions().length > 0)"
+        placeholder="Tapez au moins 3 lettres pour rechercher une adresse..."
+        class="address-input"
+        [class.has-selection]="selectedAddress() !== null">
 
-    <button (click)="search()" [disabled]="!address() || loading()">
+      @if (selectedAddress()) {
+        <button class="clear-btn" (click)="clearAddress()" title="Effacer">
+          ✕
+        </button>
+      }
+
+      @if (showSuggestions() && suggestions().length > 0) {
+        <div class="suggestions-dropdown">
+          @for (suggestion of suggestions(); track suggestion.properties.id) {
+            <div class="suggestion-item" (click)="selectSuggestion(suggestion)">
+              <div class="suggestion-label">
+                📍 {{ suggestion.properties.label }}
+              </div>
+              <div class="suggestion-context">
+                {{ suggestion.properties.context }}
+                <span class="suggestion-score">Score: {{ (suggestion.properties.score * 100).toFixed(0) }}%</span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      @if (showSuggestions() && address().length >= 3 && suggestions().length === 0) {
+        <div class="suggestions-dropdown">
+          <div class="no-suggestion">
+            Aucune adresse trouvée
+          </div>
+        </div>
+      }
+    </div>
+
+    <button
+      class="search-btn"
+      (click)="search()"
+      [disabled]="!canSearch()"
+      [class.disabled]="!canSearch()">
       {{ loading() ? 'Recherche...' : 'Vérifier la couverture' }}
     </button>
   </div>
 
+  @if (!selectedAddress() && address().length > 0 && address().length < 3) {
+    <div class="info-message">
+      ℹ️ Tapez au moins 3 caractères pour voir les suggestions
+    </div>
+  }
+
+  @if (selectedAddress()) {
+    @let selected = selectedAddress();
+    @if (selected) {
+      <div class="selected-address">
+        ✅ Adresse sélectionnée : <strong>{{ selected.properties.label }}</strong>
+      </div>
+    }
+  }
+
+  <!-- Results section -->
   <div class="results">
     @if (results()) {
       @let data = results();
@@ -90,11 +144,7 @@
     }
 
     @if (!results() && !loading()) {
-      <p>Entrez une adresse et cliquez sur "Vérifier" pour voir la couverture réseau</p>
+      <p>Sélectionnez une adresse dans la liste de suggestions puis cliquez sur "Vérifier la couverture"</p>
     }
   </div>
-
-  @if (loading()) {
-    <p class="loading-message">Chargement des données...</p>
-  }
 </div>
