@@ -5,22 +5,23 @@ import { HttpClient } from '@angular/common/http';
 import { CoverageService } from './services/coverage';
 import { debounceTime, Subject } from 'rxjs';
 
-interface OperatorCoverage {
-  two_g: boolean;  // 2G
-  three_g: boolean; // 3G
-  four_g: boolean;  // 4G
+export interface OperatorCoverage {
+  '2G': boolean;
+  '3G': boolean;
+  '4G': boolean;
 }
 
-interface AddressCoverage {
+export interface AddressCoverage {
   orange: OperatorCoverage;
   SFR: OperatorCoverage;
   bouygues: OperatorCoverage;
   Free: OperatorCoverage;
 }
 
-interface CoverageResults {
-  [key: string]: AddressCoverage;
+export interface CoverageResults {
+  [addressId: string]: AddressCoverage;
 }
+
 @Component({
   selector: 'app-root',
   standalone: true,
