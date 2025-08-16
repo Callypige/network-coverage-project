@@ -1,5 +1,4 @@
 import polars as pl
-import math
 from typing import Optional
 
 def compute_coverage_for_point(x: float, y: float, df: pl.DataFrame, radius_by_tech: Optional[dict[str, float]] = None):

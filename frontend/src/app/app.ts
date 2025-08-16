@@ -4,9 +4,9 @@ import { CommonModule } from '@angular/common';
 import { CoverageService } from './services/coverage';
 
 interface OperatorCoverage {
-  '2G': boolean;
-  '3G': boolean;
-  '4G': boolean;
+  two_g: boolean;  // 2G
+  three_g: boolean; // 3G
+  four_g: boolean;  // 4G
 }
 
 interface AddressCoverage {
@@ -19,7 +19,6 @@ interface AddressCoverage {
 interface CoverageResults {
   [key: string]: AddressCoverage;
 }
-
 @Component({
   selector: 'app-root',
   imports: [FormsModule, CommonModule],
@@ -43,7 +42,6 @@ export class App {
 
     this.coverageService.checkCoverage(this.address()).subscribe({
       next: (data) => {
-        console.log('Résultats reçus:', data);
         this.results.set(data);
         this.loading.set(false);
       },

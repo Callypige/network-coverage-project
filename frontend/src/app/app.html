@@ -1,94 +1,100 @@
+<!-- app.html -->
 <div class="container">
   <h1>🗼 Network Coverage Checker</h1>
 
   <div class="search-box">
-    <input type="text" [ngModel]="address()" (ngModelChange)="address.set($event)">
+    <input
+      type="text"
+      [ngModel]="address()"
+      (ngModelChange)="address.set($event)"
+      placeholder="Entrez une adresse...">
+
     <button (click)="search()" [disabled]="!address() || loading()">
-     {{ loading() ? 'Recherche...' : 'Vérifier la couverture' }}
+      {{ loading() ? 'Recherche...' : 'Vérifier la couverture' }}
     </button>
   </div>
 
   <div class="results">
-  @if (results()) {
-    <h2>📡 Couverture réseau pour :</h2>
-    <p class="address-label">{{ address() }}</p>
-    @let data = results();
-    @if (data && data['id1']) {
-      <div class="operators-grid">
-        <!-- Orange -->
-        <div class="operator-card">
-          <h3 class="operator-name orange">Orange</h3>
-          <div class="tech-badges">
-            <span class="badge" [class.active]="data['id1']['orange']['2G']">
-              2G {{ data['id1']['orange']['2G'] ? '✓' : '✗' }}
-            </span>
-            <span class="badge" [class.active]="data['id1']['orange']['3G']">
-              3G {{ data['id1']['orange']['3G'] ? '✓' : '✗' }}
-            </span>
-            <span class="badge" [class.active]="data['id1']['orange']['4G']">
-              4G {{ data['id1']['orange']['4G'] ? '✓' : '✗' }}
-            </span>
-          </div>
-        </div>
+    @if (results()) {
+      @let data = results();
+      @if (data && data['id1']) {
+        <h2>📡 Couverture réseau pour :</h2>
+        <p class="address-label">{{ address() }}</p>
 
-        <!-- SFR -->
-        <div class="operator-card">
-          <h3 class="operator-name sfr">SFR</h3>
-          <div class="tech-badges">
-            <span class="badge" [class.active]="data['id1']['SFR']['2G']">
-              2G {{ data['id1']['SFR']['2G'] ? '✓' : '✗' }}
-            </span>
-            <span class="badge" [class.active]="data['id1']['SFR']['3G']">
-              3G {{ data['id1']['SFR']['3G'] ? '✓' : '✗' }}
-            </span>
-            <span class="badge" [class.active]="data['id1']['SFR']['4G']">
-              4G {{ data['id1']['SFR']['4G'] ? '✓' : '✗' }}
-            </span>
+        <div class="operators-grid">
+          <!-- Orange -->
+          <div class="operator-card">
+            <h3 class="operator-name orange">Orange</h3>
+            <div class="tech-badges">
+              <span class="badge" [class.active]="data['id1']['orange']['two_g']">
+                2G {{ data['id1']['orange']['two_g'] ? '✓' : '✗' }}
+              </span>
+              <span class="badge" [class.active]="data['id1']['orange']['three_g']">
+                3G {{ data['id1']['orange']['three_g'] ? '✓' : '✗' }}
+              </span>
+              <span class="badge" [class.active]="data['id1']['orange']['four_g']">
+                4G {{ data['id1']['orange']['four_g'] ? '✓' : '✗' }}
+              </span>
+            </div>
           </div>
-        </div>
 
-        <!-- Bouygues -->
-        <div class="operator-card">
-          <h3 class="operator-name bouygues">Bouygues</h3>
-          <div class="tech-badges">
-            <span class="badge" [class.active]="data['id1']['bouygues']['2G']">
-              2G {{ data['id1']['bouygues']['2G'] ? '✓' : '✗' }}
-            </span>
-            <span class="badge" [class.active]="data['id1']['bouygues']['3G']">
-              3G {{ data['id1']['bouygues']['3G'] ? '✓' : '✗' }}
-            </span>
-            <span class="badge" [class.active]="data['id1']['bouygues']['4G']">
-              4G {{ data['id1']['bouygues']['4G'] ? '✓' : '✗' }}
-            </span>
+          <!-- SFR -->
+          <div class="operator-card">
+            <h3 class="operator-name sfr">SFR</h3>
+            <div class="tech-badges">
+              <span class="badge" [class.active]="data['id1']['SFR']['two_g']">
+                2G {{ data['id1']['SFR']['two_g'] ? '✓' : '✗' }}
+              </span>
+              <span class="badge" [class.active]="data['id1']['SFR']['three_g']">
+                3G {{ data['id1']['SFR']['three_g'] ? '✓' : '✗' }}
+              </span>
+              <span class="badge" [class.active]="data['id1']['SFR']['four_g']">
+                4G {{ data['id1']['SFR']['four_g'] ? '✓' : '✗' }}
+              </span>
+            </div>
           </div>
-        </div>
 
-        <!-- Free (si tu l'as dans ton backend) -->
-        <div class="operator-card">
-          <h3 class="operator-name free">Free</h3>
-          <div class="tech-badges">
-            <span class="badge" [class.active]="data['id1']['Free']['2G']">
-              2G {{ data['id1']['Free']['2G'] ? '✓' : '✗' }}
-            </span>
-            <span class="badge" [class.active]="data['id1']['Free']['3G']">
-              3G {{ data['id1']['Free']['3G'] ? '✓' : '✗' }}
-            </span>
-            <span class="badge" [class.active]="data['id1']['Free']['4G']">
-              4G {{ data['id1']['Free']['4G'] ? '✓' : '✗' }}
-            </span>
+          <!-- Bouygues -->
+          <div class="operator-card">
+            <h3 class="operator-name bouygues">Bouygues</h3>
+            <div class="tech-badges">
+              <span class="badge" [class.active]="data['id1']['bouygues']['two_g']">
+                2G {{ data['id1']['bouygues']['two_g'] ? '✓' : '✗' }}
+              </span>
+              <span class="badge" [class.active]="data['id1']['bouygues']['three_g']">
+                3G {{ data['id1']['bouygues']['three_g'] ? '✓' : '✗' }}
+              </span>
+              <span class="badge" [class.active]="data['id1']['bouygues']['four_g']">
+                4G {{ data['id1']['bouygues']['four_g'] ? '✓' : '✗' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Free -->
+          <div class="operator-card">
+            <h3 class="operator-name free">Free</h3>
+            <div class="tech-badges">
+              <span class="badge" [class.active]="data['id1']['Free']['two_g']">
+                2G {{ data['id1']['Free']['two_g'] ? '✓' : '✗' }}
+              </span>
+              <span class="badge" [class.active]="data['id1']['Free']['three_g']">
+                3G {{ data['id1']['Free']['three_g'] ? '✓' : '✗' }}
+              </span>
+              <span class="badge" [class.active]="data['id1']['Free']['four_g']">
+                4G {{ data['id1']['Free']['four_g'] ? '✓' : '✗' }}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
+      }
     }
-  }
 
-  @if (!results() && !loading()) {
-    <p>Entrez une adresse et cliquez sur "Vérifier" pour voir la couverture réseau</p>
-  }
-</div>
+    @if (!results() && !loading()) {
+      <p>Entrez une adresse et cliquez sur "Vérifier" pour voir la couverture réseau</p>
+    }
+  </div>
 
   @if (loading()) {
     <p class="loading-message">Chargement des données...</p>
   }
 </div>
-
