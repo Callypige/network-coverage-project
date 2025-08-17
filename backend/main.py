@@ -129,32 +129,40 @@ def convert_coverage_to_model(coverage_dict: Dict) -> AddressCoverage:
     """
     
     # Default no coverage
-    default = OperatorCoverage(two_g=False, three_g=False, four_g=False)
+    default = OperatorCoverage(**{"2G": False, "3G": False, "4G": False})
     
     # Build the response
     return AddressCoverage(
         orange=OperatorCoverage(
-            two_g=coverage_dict.get('Orange', {}).get('2G', False),
-            three_g=coverage_dict.get('Orange', {}).get('3G', False),
-            four_g=coverage_dict.get('Orange', {}).get('4G', False)
+            **{
+                "2G": coverage_dict.get('Orange', {}).get('2G', False),
+                "3G": coverage_dict.get('Orange', {}).get('3G', False),
+                "4G": coverage_dict.get('Orange', {}).get('4G', False)
+            }
         ) if 'Orange' in coverage_dict else default,
         
         SFR=OperatorCoverage(
-            two_g=coverage_dict.get('SFR', {}).get('2G', False),
-            three_g=coverage_dict.get('SFR', {}).get('3G', False),
-            four_g=coverage_dict.get('SFR', {}).get('4G', False)
+            **{
+                "2G": coverage_dict.get('SFR', {}).get('2G', False),
+                "3G": coverage_dict.get('SFR', {}).get('3G', False),
+                "4G": coverage_dict.get('SFR', {}).get('4G', False)
+            }
         ) if 'SFR' in coverage_dict else default,
         
         bouygues=OperatorCoverage(
-            two_g=coverage_dict.get('Bouygues', {}).get('2G', False),
-            three_g=coverage_dict.get('Bouygues', {}).get('3G', False),
-            four_g=coverage_dict.get('Bouygues', {}).get('4G', False)
+            **{
+                "2G": coverage_dict.get('Bouygues', {}).get('2G', False),
+                "3G": coverage_dict.get('Bouygues', {}).get('3G', False),
+                "4G": coverage_dict.get('Bouygues', {}).get('4G', False)
+            }
         ) if 'Bouygues' in coverage_dict else default,
         
         Free=OperatorCoverage(
-            two_g=coverage_dict.get('Free', {}).get('2G', False),
-            three_g=coverage_dict.get('Free', {}).get('3G', False),
-            four_g=coverage_dict.get('Free', {}).get('4G', False)
+            **{
+                "2G": coverage_dict.get('Free', {}).get('2G', False),
+                "3G": coverage_dict.get('Free', {}).get('3G', False),
+                "4G": coverage_dict.get('Free', {}).get('4G', False)
+            }
         ) if 'Free' in coverage_dict else default
     )
 
