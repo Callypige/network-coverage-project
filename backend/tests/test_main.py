@@ -136,7 +136,7 @@ class TestMainAPI:
         assert "id2" in data
         
         # id1 should have coverage
-        assert data["id1"]["orange"]["2G"] == True
+        assert data["id1"]["orange"]["2G"]
         
         # id2 should have no coverage (geocoding failed)
         assert not data["id2"]["orange"]["2G"]
