@@ -1,15 +1,19 @@
 # 🗼 Network Coverage Project
 
-Une application webpour vérifier la couverture réseau mobile en France. L'application permet de rechercher une adresse et d'afficher la couverture 2G/3G/4G pour les opérateurs Orange, SFR, Bouygues et Free.
+Application web pour vérifier la couverture réseau mobile en France. Recherche d'adresse (API gouvernementale) et affichage de la couverture 2G/3G/4G pour Orange, SFR, Bouygues et Free.
+
+---
 
 ## 📋 Vue d'ensemble
 
-- **Backend** : FastAPI (Python) pour l'API REST
-- **Frontend** : Angular version 20 avec signals
-- **Données** : Fichier CSV avec les mesures de couverture réseau
-- **Géocodage** : API Adresse du gouvernement français
+- **Backend** : FastAPI (Python, async, REST)
+- **Frontend** : Angular 20 avec signals, Playwright pour E2E
+- **Données** : Fichier CSV (antennes, techno/réseau)
+- **Géocodage** : API Adresse gouvernementale (data.gouv.fr)
 
-## 🐍 Configuration du Backend
+---
+
+## 🐍 Backend (Python/FastAPI)
 
 ### Prérequis
 
@@ -18,93 +22,78 @@ Une application webpour vérifier la couverture réseau mobile en France. L'appl
 
 ### Installation
 
-1. **Cloner le repository**
-   ```bash
-   git clone https://github.com/Callypige/network-coverage-project.git
-   cd network-coverage-project
-   ```
+```bash
+git clone https://github.com/Callypige/network-coverage-project.git
+cd network-coverage-project/backend
 
-2. **Naviguer vers le backend**
-   ```bash
-   cd backend
-   ```
+# Créer un venv
+python -m venv venv
+# Windows PowerShell
+.\venv\Scripts\Activate.ps1
+# Windows CMD
+.\venv\Scripts\activate.bat
+# Linux/Mac
+source venv/bin/activate
 
-3. **Créer un environnement virtuel**
-   ```bash
-   # Avec venv
-   python -m venv venv
-   
-   # Activer l'environnement
-   # Windows PowerShell
-   .\venv\Scripts\Activate.ps1
-   # Windows CMD
-   .\venv\Scripts\activate.bat
-   # Linux/Mac
-   source venv/bin/activate
-   ```
+# Installer les dépendances
+pip install -r requirements.txt
+```
 
-4. **Installer les dépendances**
-   ```bash
-   pip install -r requirements.txt
-   ```
-### Lancement du serveur
+**Dépendances principales :**  
+- fastapi, uvicorn[standard], polars, aiohttp, pyproj, pydantic, pytest, pytest-asyncio, httpx
+
+### Lancement
 
 ```bash
-# Mode développement avec rechargement automatique
+# Mode développement (rechargement auto)
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
-# Ou directement
+# Ou directement (non recommandé)
 python main.py
 ```
 
-### Vérification
+### Vérification API
 
-- **API Documentation** : http://localhost:8000/docs
+- **Docs OpenAPI** : http://localhost:8000/docs
 - **Health Check** : http://localhost:8000/health
 - **Test de base** : http://localhost:8000/
 
+---
 
-## 🅰️ Configuration du Frontend
+## 🅰️ Frontend (Angular)
 
 ### Prérequis
 
 - Node.js 18+
 - npm ou yarn
-- Angular CLI 17+
+- Angular CLI 20+
 
 ### Installation
 
-1. **Naviguer vers le frontend**
-   ```bash
-   cd frontend
-   ```
-
-2. **Installer Angular CLI (si pas déjà installé)**
-   ```bash
-   npm install -g @angular/cli@17
-   ```
-
-3. **Installer les dépendances**
-   ```bash
-   npm install
-   ```
+```bash
+cd ../frontend
+npm install
+```
 
 ### Dépendances principales
 
 ```json
 {
-  "@angular/core": "^17.0.0",
-  "@angular/common": "^17.0.0",
-  "@angular/forms": "^17.0.0",
-  "@angular/platform-browser": "^17.0.0",
+  "@angular/core": "^20.1.0",
+  "@angular/common": "^20.1.0",
+  "@angular/forms": "^20.1.0",
+  "@angular/platform-browser": "^20.1.0",
+  "@angular/router": "^20.1.0",
+  "@playwright/test": "^1.54.2",
   "rxjs": "~7.8.0",
-  "typescript": "~5.2.0"
+  "tslib": "^2.3.0",
+  "zone.js": "~0.15.0"
 }
 ```
 
 ### Configuration de l'API
 
-Dans `src/app/coverage.service.ts`, vérifier l'URL de l'API :
+Dans `src/app/coverage.service.ts`, vérifier l’URL :
 
 ```typescript
 export class CoverageService {
@@ -112,27 +101,30 @@ export class CoverageService {
 }
 ```
 
-### Lancement du serveur de développement
+### Lancement du serveur de dev
 
 ```bash
-# Serveur de développement
-ng serve ou npm start
+ng serve
+# ou
+npm start
+```
 
+---
 
+### ▶️ Utiliser l'application
 
-### 3. Utiliser l'application
 1. Ouvrir http://localhost:4200
 2. Taper une adresse (ex: "157 boulevard Mac Donald 75019 Paris")
-3. Sélectionner dans les suggestions
+3. Sélectionner une suggestion
 4. Cliquer sur "Vérifier la couverture"
-5. Voir les résultats par opérateur et technologie
+5. Résultats par opérateur & techno affichés
 
 ---
 
 ## 📡 API Endpoints
 
 ### `POST /coverage`
-Vérifier la couverture pour une ou plusieurs adresses.
+Vérifie la couverture pour une ou plusieurs adresses.
 
 **Request :**
 ```json
@@ -154,40 +146,42 @@ Vérifier la couverture pour une ou plusieurs adresses.
 ```
 
 ### `GET /health`
-Vérifier l'état de l'API et des données.
+Vérifie l’état de l’API et la disponibilité des données.
 
 ### `GET /`
-Information générale sur l'API.
+Informations générales sur l’API.
 
 ---
 
-## 🧪 Tests et Debug
+## 🧪 Tests & Debug
 
-### Tester l'API directement
+### Lancer les tests backend
 
-Lancer les tests côté backend :
 ```bash
-pytest tests -v                                                           
+pytest tests -v
 ```
 
-Test avec curl :
+### Tester l’API manuellement
+
 ```bash
 curl -X POST "http://localhost:8000/coverage" \
   -H "Content-Type: application/json" \
   -d '{"id1": "157 boulevard Mac Donald 75019 Paris"}'
 
-# Test de santé
 curl http://localhost:8000/health
 ```
 
 ### Géocodage qui échoue
-- Vérifier la connectivité internet
-- Tester l'API gouv.fr directement : https://api-adresse.data.gouv.fr/search/?q=Paris&limit=1
 
+- Vérifier la connexion internet
+- Tester directement : https://api-adresse.data.gouv.fr/search/?q=Paris&limit=1
 
-## 📄 Licence
+---
 
-Ce projet est sous licence MIT.
+## 🧑‍💻 Développement & Tests Frontend
+
+- **Unitaires :** `npm test`
+- **E2E (Playwright) :** `npm run e2e`
 
 ## 👨‍💻 Auteur
 
