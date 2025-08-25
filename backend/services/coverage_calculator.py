@@ -1,7 +1,12 @@
 import polars as pl
-from typing import Optional
+from typing import Dict, Optional
 
-def compute_coverage_for_point(x: float, y: float, df: pl.DataFrame, radius_by_tech: Optional[dict[str, float]] = None):
+def compute_coverage_for_point(
+    x: float,
+    y: float,
+    df: pl.DataFrame,
+    radius_by_tech: Optional[dict[str, float]] = None
+    ) -> Dict[str, dict[str, bool]]:
     """
     Calculates the coverage for a given point.
     Args:

@@ -103,12 +103,12 @@ async def check_coverage(addresses: Dict[str, str]) -> Dict[str, AddressCoverage
                 results[address_id] = convert_coverage_to_model({})
                 continue
             
-            logger.info(f"📍 Found coordinates: Lambert93({geocode_result['x_lambert93']:.2f}, {geocode_result['y_lambert93']:.2f})")
+            logger.info(f"📍 Found coordinates: Lambert93({geocode_result.x_lambert93:.2f}, {geocode_result.y_lambert93:.2f})")
             
             # Step 2: Calculate coverage
             coverage_dict = compute_coverage_for_point(
-                geocode_result['x_lambert93'],
-                geocode_result['y_lambert93'],
+                geocode_result.x_lambert93,
+                geocode_result.y_lambert93,
                 coverage_df
             )
             

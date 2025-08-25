@@ -1,11 +1,13 @@
 import aiohttp
-from typing import Optional, Dict
+from typing import Optional
 import pyproj
 import asyncio
 
+from backend.models import GeocodeResult
+
 DEFAULT_TIMEOUT = 10  # seconds
 
-async def geocode_address(address: str) -> Optional[Dict]:
+async def geocode_address(address: str) -> Optional[GeocodeResult]:
     """
     Géocode address with the data.gouv.fr API
 
@@ -13,7 +15,7 @@ async def geocode_address(address: str) -> Optional[Dict]:
         address: The address to geocode
 
     Returns:
-        Dict with the coordinates or None if not found
+        A GeocodeResult object or None if not found
     """
     if not address or not address.strip():
         return None
@@ -49,13 +51,13 @@ async def geocode_address(address: str) -> Optional[Dict]:
                     print(f"Error converting coordinates: {e}")
                     return None
 
-                return {
-                    'longitude': lon,
-                    'latitude': lat,
-                    'x_lambert93': x_lambert93,
-                    'y_lambert93': y_lambert93,
-                    'address_found': feature['properties']['label']
-                }
+                return GeocodeResult(
+                    longitude=lon,
+                    latitude=lat,
+                    x_lambert93=x_lambert93,
+                    y_lambert93=y_lambert93,
+                    address_found=feature['properties']['label']
+                )
 
     except asyncio.TimeoutError:
         print("Request timed out.")

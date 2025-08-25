@@ -16,3 +16,11 @@ class AddressCoverage(BaseModel):
     SFR: OperatorCoverage
     bouygues: OperatorCoverage
     Free: OperatorCoverage
+
+class GeocodeResult(BaseModel):
+    """Result for a geocoding request"""
+    longitude: float
+    latitude: float
+    x_lambert93: float
+    y_lambert93: float
+    address_found: str
