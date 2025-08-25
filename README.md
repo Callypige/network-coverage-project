@@ -1,33 +1,53 @@
 # 🗼 Network Coverage Project
 
-Application web pour vérifier la couverture réseau mobile en France. Recherche d'adresse (API gouvernementale) et affichage de la couverture 2G/3G/4G pour Orange, SFR, Bouygues et Free.
-
----
+Application web pour vérifier la couverture réseau mobile en France. Recherche d'adresse via l'API gouvernementale et affichage de la couverture 2G/3G/4G pour Orange, SFR, Bouygues et Free.
 
 ## 📋 Vue d'ensemble
 
 - **Backend** : FastAPI (Python, async, REST)
 - **Frontend** : Angular 20 avec signals, Playwright pour E2E
-- **Données** : Fichier CSV (antennes, techno/réseau)
+- **Données** : Fichier CSV (antennes, technologie/réseau)
 - **Géocodage** : API Adresse gouvernementale (data.gouv.fr)
 
----
+## 🚀 Démarrage rapide
+
+### 1. Backend (obligatoire)
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# ou .\venv\Scripts\Activate.ps1  # Windows PowerShell
+pip install -r requirements.txt
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### 2. Frontend
+```bash
+cd frontend
+npm install
+ng serve
+```
+
+### 3. Accès
+- **Application** : http://localhost:4200
+- **API docs** : http://localhost:8000/docs
 
 ## 🐍 Backend (Python/FastAPI)
 
 ### Prérequis
-
 - Python 3.8+
-- pip ou conda
+- pip
 
-### Installation
+### Installation détaillée
 
 ```bash
 git clone https://github.com/Callypige/network-coverage-project.git
 cd network-coverage-project/backend
 
-# Créer un venv
+# Créer un environnement virtuel
 python -m venv venv
+
+# Activer l'environnement
 # Windows PowerShell
 .\venv\Scripts\Activate.ps1
 # Windows CMD
@@ -39,69 +59,54 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-**Dépendances principales :**  
-- fastapi, uvicorn[standard], polars, aiohttp, pyproj, pydantic, pytest, pytest-asyncio, httpx
+### Dépendances principales
+- `fastapi` - Framework web moderne
+- `uvicorn[standard]` - Serveur ASGI
+- `polars` - Manipulation de données performante
+- `aiohttp` - Client HTTP asynchrone
+- `pyproj` - Transformations géographiques
+- `pydantic` - Validation de données
+- `pytest` - Tests unitaires
 
 ### Lancement
 
 ```bash
-# Mode développement (rechargement auto)
+# Mode développement (recommandé)
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
-# Ou directement (non recommandé)
+# Alternative
 python main.py
 ```
 
-### Vérification API
-
-- **Docs OpenAPI** : http://localhost:8000/docs
+### Vérification
+- **Documentation OpenAPI** : http://localhost:8000/docs
 - **Health Check** : http://localhost:8000/health
-- **Test de base** : http://localhost:8000/
-
----
+- **Accueil API** : http://localhost:8000/
 
 ## 🅰️ Frontend (Angular)
 
 ### Prérequis
-
 - Node.js 18+
-- npm ou yarn
+- npm
 - Angular CLI 20+
 
 ### Installation
 
 ```bash
-cd ../frontend
+cd frontend
 npm install
 ```
 
-### Dépendances principales
-
-```json
-{
-  "@angular/core": "^20.1.0",
-  "@angular/common": "^20.1.0",
-  "@angular/forms": "^20.1.0",
-  "@angular/platform-browser": "^20.1.0",
-  "@angular/router": "^20.1.0",
-  "@playwright/test": "^1.54.2",
-  "rxjs": "~7.8.0",
-  "tslib": "^2.3.0",
-  "zone.js": "~0.15.0"
-}
-```
-
-### Configuration de l'API
-
-Dans `src/app/coverage.service.ts`, vérifier l’URL :
+### Configuration
+Vérifier l'URL de l'API dans `src/app/coverage.service.ts` :
 
 ```typescript
 export class CoverageService {
-  private apiUrl = 'http://localhost:8000'; // ✅ URL du backend
+  private apiUrl = 'http://localhost:8000'; // URL du backend
 }
 ```
 
-### Lancement du serveur de dev
+### Lancement
 
 ```bash
 ng serve
@@ -109,22 +114,20 @@ ng serve
 npm start
 ```
 
----
+L'application sera accessible sur http://localhost:4200
 
-### ▶️ Utiliser l'application
+## 📱 Utilisation
 
-1. Ouvrir http://localhost:4200
-2. Taper une adresse (ex: "157 boulevard Mac Donald 75019 Paris")
-3. Sélectionner une suggestion
-4. Cliquer sur "Vérifier la couverture"
-5. Résultats par opérateur & techno affichés
-
----
+1. **Ouvrir** http://localhost:4200
+2. **Taper** une adresse (ex: "157 boulevard Mac Donald 75019 Paris")
+3. **Sélectionner** une suggestion dans la liste
+4. **Cliquer** sur "Vérifier la couverture"
+5. **Consulter** les résultats par opérateur et technologie
 
 ## 📡 API Endpoints
 
 ### `POST /coverage`
-Vérifie la couverture pour une ou plusieurs adresses.
+Vérifie la couverture réseau pour une ou plusieurs adresses.
 
 **Request :**
 ```json
@@ -146,43 +149,75 @@ Vérifie la couverture pour une ou plusieurs adresses.
 ```
 
 ### `GET /health`
-Vérifie l’état de l’API et la disponibilité des données.
+Vérifie l'état de l'API et la disponibilité des données.
 
 ### `GET /`
-Informations générales sur l’API.
+Informations générales sur l'API.
 
----
+## 🧪 Tests
 
-## 🧪 Tests & Debug
-
-### Lancer les tests backend
-
+### Backend
 ```bash
+cd backend
 pytest tests -v
 ```
 
-### Tester l’API manuellement
-
+### Frontend
 ```bash
+cd frontend
+
+# Tests unitaires
+npm test
+
+# Tests E2E (nécessite que l'app tourne)
+npm run e2e
+```
+
+**Détail des tests frontend :**
+* **Unitaires :** `npm test`
+* **E2E (Playwright) :** `npm run e2e`
+
+### Test manuel de l'API
+```bash
+# Test de couverture
 curl -X POST "http://localhost:8000/coverage" \
   -H "Content-Type: application/json" \
   -d '{"id1": "157 boulevard Mac Donald 75019 Paris"}'
 
+# Health check
 curl http://localhost:8000/health
 ```
 
-### Géocodage qui échoue
+## 🐛 Dépannage
 
+### Le géocodage ne fonctionne pas
 - Vérifier la connexion internet
-- Tester directement : https://api-adresse.data.gouv.fr/search/?q=Paris&limit=1
+- Tester directement l'API : https://api-adresse.data.gouv.fr/search/?q=Paris&limit=1
 
----
+### CORS errors
+- S'assurer que le backend tourne sur le port 8000
+- Vérifier l'URL dans `coverage.service.ts`
 
-## 🧑‍💻 Développement & Tests Frontend
+### Tests Playwright qui échouent
+- S'assurer que `ng serve` tourne sur le port 4200
+- Vider le cache du navigateur
 
-- **Unitaires :** `npm test`
-- **E2E (Playwright) :** `npm run e2e`
+## 🏗️ Architecture
+
+```
+network-coverage-project/
+├── backend/
+│   ├── main.py              # Point d'entrée FastAPI
+│   ├── requirements.txt     # Dépendances Python
+│   ├── tests/              # Tests backend
+│   └── data/               # Données CSV
+└── frontend/
+    ├── src/app/            # Code Angular
+    ├── e2e/               # Tests Playwright
+    ├── package.json       # Dépendances Node
+    └── angular.json       # Configuration Angular
+```
 
 ## 👨‍💻 Auteur
 
-**Callypige** - [GitHub](https://github.com/Callypige)
+**Sophie / Callypige** - [GitHub](https://github.com/Callypige)
