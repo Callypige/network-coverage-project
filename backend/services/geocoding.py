@@ -3,7 +3,7 @@ from typing import Optional
 import pyproj
 import asyncio
 
-from backend.models import GeocodeResult
+from models import GeocodeResult
 
 DEFAULT_TIMEOUT = 10  # seconds
 
