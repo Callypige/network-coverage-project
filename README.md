@@ -202,22 +202,6 @@ curl http://localhost:8000/health
 - S'assurer que `ng serve` tourne sur le port 4200
 - Vider le cache du navigateur
 
-## 🏗️ Architecture
-
-```
-network-coverage-project/
-├── backend/
-│   ├── main.py              # Point d'entrée FastAPI
-│   ├── requirements.txt     # Dépendances Python
-│   ├── tests/              # Tests backend
-│   └── data/               # Données CSV
-└── frontend/
-    ├── src/app/            # Code Angular
-    ├── e2e/               # Tests Playwright
-    ├── package.json       # Dépendances Node
-    └── angular.json       # Configuration Angular
-```
-
 ## 👨‍💻 Auteur
 
 **Sophie / Callypige** - [GitHub](https://github.com/Callypige)
