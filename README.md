@@ -11,7 +11,7 @@ Application web pour vérifier la couverture réseau mobile en France. Recherche
 
 ## 🚀 Démarrage rapide
 
-### 1. Backend (obligatoire)
+### 1. Backend
 ```bash
 cd backend
 python -m venv venv
