@@ -1,9 +1,10 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from typing import Dict
+from typing import Dict, Annotated
 import logging
 from pathlib import Path
 from contextlib import asynccontextmanager
+import polars as pl
 
 from models import AddressCoverage, OperatorCoverage
 from services.coverage_calculator import compute_coverage_for_point
@@ -13,20 +14,6 @@ from services.geocoding import geocode_address
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-app = FastAPI(
-    title="Network Coverage API",
-    description="API to check mobile network coverage for multiple addresses",
-    version="1.0.0"
-)
-
-# CORS middleware configuration
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:4200"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -50,7 +37,29 @@ async def lifespan(app: FastAPI):
     yield
     # No teardown needed
 
-app.router.lifespan_context = lifespan
+app = FastAPI(
+    title="Network Coverage API",
+    description="API to check mobile network coverage for multiple addresses",
+    version="1.0.0",
+    lifespan=lifespan
+)
+
+# CORS middleware configuration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:4200"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Dependency injection
+def get_coverage_data() -> pl.DataFrame:
+    """Dependency qui retourne les données de couverture"""
+    coverage_df = getattr(app.state, "coverage_df", None)
+    if coverage_df is None:
+        logger.error("Coverage data not loaded")
+        raise HTTPException(status_code=500, detail="Coverage data not available")
+    return coverage_df
 
 @app.get("/")
 def read_root():
@@ -73,21 +82,20 @@ def health_check():
     }
 
 @app.post("/coverage", response_model=Dict[str, AddressCoverage])
-async def check_coverage(addresses: Dict[str, str]) -> Dict[str, AddressCoverage]:
+async def check_coverage(
+    addresses: Dict[str, str],
+    coverage_df: Annotated[pl.DataFrame, Depends(get_coverage_data)]
+) -> Dict[str, AddressCoverage]:
     """
     Check network coverage for multiple addresses.
     
     Args:
         addresses: Dict with id as key and address string as value
+        coverage_df: Données de couverture injectées automatiquement
         
     Returns:
         Dict with id as key and coverage information as value
     """
-    coverage_df = getattr(app.state, "coverage_df", None)
-    # Check if coverage data is loaded
-    if coverage_df is None:
-        logger.error("Coverage data not loaded")
-        raise HTTPException(status_code=500, detail="Coverage data not available")
     
     if not addresses:
         raise HTTPException(status_code=400, detail="No addresses provided")
