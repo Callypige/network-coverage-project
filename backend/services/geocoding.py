@@ -2,8 +2,12 @@ import aiohttp
 from typing import Optional
 import pyproj
 import asyncio
+import logging
 
 from models import GeocodeResult
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 DEFAULT_TIMEOUT = 10  # seconds
 
@@ -28,17 +32,17 @@ async def geocode_address(address: str) -> Optional[GeocodeResult]:
         async with aiohttp.ClientSession(timeout=timeout) as session:
             async with session.get(url, params=params) as response:
                 if response.status != 200:
-                    print(f"HTTP error: {response.status}")
+                    logger.error(f"HTTP error: {response.status}")
                     return None
 
                 try:
                     data = await response.json()
                 except Exception as e:
-                    print(f"Error parsing JSON: {e}")
+                    logger.error(f"Error parsing JSON: {e}")
                     return None
 
                 if not data.get('features'):
-                    print("No features found in response.")
+                    logger.info("No features found in response.")
                     return None
 
                 feature = data['features'][0]
@@ -48,7 +52,7 @@ async def geocode_address(address: str) -> Optional[GeocodeResult]:
                 try:
                     x_lambert93, y_lambert93 = convert_gps_to_lambert93(lon, lat)
                 except Exception as e:
-                    print(f"Error converting coordinates: {e}")
+                    logger.error(f"Error converting coordinates: {e}")
                     return None
 
                 return GeocodeResult(
@@ -60,13 +64,13 @@ async def geocode_address(address: str) -> Optional[GeocodeResult]:
                 )
 
     except asyncio.TimeoutError:
-        print("Request timed out.")
+        logger.error("Request timed out.")
         return None
     except aiohttp.ClientError as e:
-        print(f"Client error: {e}")
+        logger.error(f"Client error: {e}")
         return None
     except Exception as e:
-        print(f"Unexpected error during geocoding: {e}")
+        logger.error(f"Unexpected error during geocoding: {e}")
         return None
 
 def convert_gps_to_lambert93(lon: float, lat: float) -> tuple:

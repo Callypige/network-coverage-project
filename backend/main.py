@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import Dict
 import logging
 from pathlib import Path
+from contextlib import asynccontextmanager
 
 from models import AddressCoverage, OperatorCoverage
 from services.coverage_calculator import compute_coverage_for_point
@@ -28,31 +29,34 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ========== LOAD CSV ONCE AT MODULE LEVEL ==========
-print("🚀 Loading coverage data...")
-coverage_df = None
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("🚀 Loading coverage data...")
+    csv_path = Path("data/coverage_measure.csv")
+    if not csv_path.exists():
+        csv_path = Path("coverage_measure.csv")
+    if csv_path.exists():
+        try:
+            coverage_df = load_coverage_measure_from_csv(csv_path)
+            logger.info(f"✅ Loaded {len(coverage_df)} towers from {csv_path}")
+            operators = coverage_df['operator'].unique().to_list()
+            logger.info(f"📊 Operators found: {operators}")
+            app.state.coverage_df = coverage_df
+        except Exception as e:
+            logger.error(f"❌ Error loading CSV: {e}")
+            app.state.coverage_df = None
+    else:
+        logger.error(f"❌ CSV file not found at {csv_path.absolute()}")
+        app.state.coverage_df = None
+    yield
+    # No teardown needed
 
-# Simple path checking
-csv_path = Path("data/coverage_measure.csv")
-if not csv_path.exists():
-    csv_path = Path("coverage_measure.csv")  # Try root directory
-
-if csv_path.exists():
-    try:
-        coverage_df = load_coverage_measure_from_csv(csv_path)
-        print(f"✅ Loaded {len(coverage_df)} towers from {csv_path}")
-        operators = coverage_df['operator'].unique().to_list()
-        print(f"📊 Operators found: {operators}")
-    except Exception as e:
-        print(f"❌ Error loading CSV: {e}")
-        coverage_df = None
-else:
-    print(f"❌ CSV file not found at {csv_path.absolute()}")
-# ====================================================
+app.router.lifespan_context = lifespan
 
 @app.get("/")
 def read_root():
     """Root endpoint"""
+    coverage_df = getattr(app.state, "coverage_df", None)
     return {
         "message": "Network Coverage API is running!",
         "coverage_data_loaded": coverage_df is not None,
@@ -62,6 +66,7 @@ def read_root():
 @app.get("/health")
 def health_check():
     """Health check endpoint"""
+    coverage_df = getattr(app.state, "coverage_df", None)
     return {
         "status": "healthy" if coverage_df is not None else "unhealthy",
         "coverage_data_loaded": coverage_df is not None,
@@ -79,7 +84,7 @@ async def check_coverage(addresses: Dict[str, str]) -> Dict[str, AddressCoverage
     Returns:
         Dict with id as key and coverage information as value
     """
-    
+    coverage_df = getattr(app.state, "coverage_df", None)
     # Check if coverage data is loaded
     if coverage_df is None:
         logger.error("Coverage data not loaded")
@@ -121,6 +126,7 @@ async def check_coverage(addresses: Dict[str, str]) -> Dict[str, AddressCoverage
             results[address_id] = convert_coverage_to_model({})
 
     return results
+
 
 def convert_coverage_to_model(coverage_dict: Dict) -> AddressCoverage:
     """
