@@ -54,7 +54,7 @@ app.add_middleware(
 
 # Dependency injection
 def get_coverage_data() -> pl.DataFrame:
-    """Dependency qui retourne les données de couverture"""
+    """Dependency injection for coverage data"""
     coverage_df = getattr(app.state, "coverage_df", None)
     if coverage_df is None:
         logger.error("Coverage data not loaded")
@@ -91,8 +91,8 @@ async def check_coverage(
     
     Args:
         addresses: Dict with id as key and address string as value
-        coverage_df: Données de couverture injectées automatiquement
-        
+        coverage_df: The coverage data as a Polars DataFrame
+
     Returns:
         Dict with id as key and coverage information as value
     """
